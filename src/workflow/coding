@@ -1,0 +1,56 @@
+from langgraph.graph import StateGraph
+
+
+class EngineeringAssistantProcess():
+    def __init__(self):
+        self.name = 'Engineering Assistant Process'
+
+        workflow = StateGraph(ProcessState)
+        workflow.add_node("understand_requirements", {})
+        workflow.add_node("design_and_allocate", {})
+        workflow.add_node("parallel_work", {})
+        workflow.add_node("review", {})
+        workflow.add_node("commit", {})
+
+        workflow.set_entry_point("understand_requirements")
+
+        workflow.add_conditional_edges(
+            "understand_requirements",
+            {},
+            {
+                True: "design_and_allocate",
+                False: "understand_requirements"
+            }
+        )
+
+        workflow.add_edge("design_and_allocate", "parallel_work")
+
+        workflow.add_conditional_edges(
+            "parallel_work",
+            {},
+            {
+                True: "review",
+                False: "parallel_work"
+            }
+        )
+
+        workflow.add_conditional_edges(
+            "review",
+            {},
+            {
+                True: "commit",
+                False: "parallel_work"
+            }
+        )
+
+        workflow.add_edge("commit", END)
+
+        self.app = workflow.compile()
+
+
+class ProcessState(TypedDict):
+    name: str
+    origin_input: str
+    requirements: str
+
+
