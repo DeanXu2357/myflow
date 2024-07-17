@@ -7,10 +7,9 @@ from typing import List, Optional
 
 
 # 定義資料模型
-class ProjectRequirements(BaseModel):
+class UnderstandRequirements(BaseModel):
     program_lang: str
     project_path: str
-    repository_url: str
     librarys: List[str]
     implementations: Optional[str]
     expect: str
@@ -52,10 +51,9 @@ class ProjectRequirements(BaseModel):
                 Interact with the user to collect the following information:
                 1. Programming language (program_lang)
                 2. Project's absolute path on local machine (project_path)
-                3. Project repository URL (repository_url)
-                4. Libraries and frameworks to be used (librarys)
-                5. Implementation scope (implementations) - optional
-                6. Expected goals and results (expect)
+                3. Libraries and frameworks to be used (librarys)
+                4. Implementation scope (implementations) - optional
+                5. Expected goals and results (expect)
     
                 Format the collected information as a JSON object with these exact keys.
                 Ensure that the 'librarys' field is a JSON array of strings.
@@ -64,7 +62,6 @@ class ProjectRequirements(BaseModel):
                 {
                     "program_lang": "Python",
                     "project_path": "/home/user/projects/my_project",
-                    "repository_url": "https://github.com/user/my_project",
                     "librarys": ["numpy", "pandas", "scikit-learn"],
                     "implementations": "Implement a machine learning model for predicting stock prices",
                     "expect": "A working model with 85% accuracy and a web interface for user input"

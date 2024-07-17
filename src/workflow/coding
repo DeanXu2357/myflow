@@ -1,49 +1,35 @@
-from langgraph.graph import StateGraph
+from langgraph.graph import StateGraph, END
+from typing import TypedDict
+from crew.execute_tasks import ExecuteTasks
+from crew.explain_changes import ExplainChanges
+from crew.understand_requirements import UnderstandRequirements
+from typing import List, Optional
 
 
-class EngineeringAssistantProcess():
+class BasicCoding:
     def __init__(self):
-        self.name = 'Engineering Assistant Process'
+        self.name = "Engineering Assistant Process"
 
         workflow = StateGraph(ProcessState)
-        workflow.add_node("understand_requirements", {})
-        workflow.add_node("design_and_allocate", {})
-        workflow.add_node("parallel_work", {})
-        workflow.add_node("review", {})
-        workflow.add_node("commit", {})
 
+        # 添加節點
+        workflow.add_node("understand_requirements", UnderstandRequirements().kickoff)
+        workflow.add_node("execute_tasks", ExecuteTasks().kickoff)
+        workflow.add_node("explain_changes", ExplainChanges().kickoff)
+
+        # 設置邊和條件
         workflow.set_entry_point("understand_requirements")
-
         workflow.add_conditional_edges(
             "understand_requirements",
-            {},
-            {
-                True: "design_and_allocate",
-                False: "understand_requirements"
-            }
+            is_requirements_satisfied,
+            {True: "execute_tasks", False: "understand_requirements"},
         )
-
-        workflow.add_edge("design_and_allocate", "parallel_work")
-
+        workflow.add_edge("execute_tasks", "review_changes")
         workflow.add_conditional_edges(
-            "parallel_work",
-            {},
-            {
-                True: "review",
-                False: "parallel_work"
-            }
+            "review_changes",
+            is_user_satisfied,
+            {True: END, False: "understand_requirements"},
         )
-
-        workflow.add_conditional_edges(
-            "review",
-            {},
-            {
-                True: "commit",
-                False: "parallel_work"
-            }
-        )
-
-        workflow.add_edge("commit", END)
 
         self.app = workflow.compile()
 
@@ -51,6 +37,18 @@ class EngineeringAssistantProcess():
 class ProcessState(TypedDict):
     name: str
     origin_input: str
-    requirements: str
+    input: str
+    check_executable: bool
+    program_lang: str
+    project_path: str
+    librarys: List[str]
+    implementations: Optional[str]
+    expect: str
 
 
+def is_requirements_satisfied(state: ProcessState) -> bool:
+    return state.check_executable  # 額外檢查該給參數是否有給？
+
+
+def is_user_satisfied(state: ProcessState) -> bool:
+    return state.get("input", "").lower() == "yes"
