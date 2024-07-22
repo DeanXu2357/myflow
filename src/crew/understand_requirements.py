@@ -13,37 +13,11 @@ class UnderstandRequirements(BaseModel):
     librarys: List[str]
     implementations: Optional[str]
     expect: str
+    localizer: Agent
+    prmpt_optimizer: Agent
+    manager: Agent
 
     def kickoff(self, state):
-        # 創建 OpenAI 語言模型
-        llm = Ollama(model="llama3")
-
-        # 定義代理
-        information_collector = Agent(
-            role="Information Collector",
-            goal="Collect all necessary project information from the user and output in JSON format",
-            backstory="""You are an expert in gathering project requirements. Your task is to interact with the user and collect all necessary information for the project. You must output the collected information in a valid JSON format.""",
-            verbose=True,
-            llm=llm,
-        )
-
-        information_validator = Agent(
-            role="Information Validator",
-            goal="Validate and confirm the collected project information, maintaining JSON format",
-            backstory="""You are an expert in validating project requirements. 
-                        Your task is to ensure all collected information is complete, consistent, and clear. 
-                        You must maintain the JSON format in your output.""",
-            verbose=True,
-            llm=llm,
-        )
-
-        prompt_optimizer = Agent(
-            role="AI Prompt Engineering Specialist",
-            goal="Create an optimized, clear, and actionable prompt based on project requirements",
-            backstory="""You are a world-renowned AI prompt engineering specialist with years of experience in crafting perfect prompts for various AI models. Your expertise lies in distilling complex project requirements into concise, effective prompts that guide AI systems to produce outstanding results. You have a keen understanding of how different phrasings and structures can significantly impact AI output.""",
-            verbose=True,
-            llm=llm,
-        )
 
         # 定義任務
         collect_info_task = Task(
